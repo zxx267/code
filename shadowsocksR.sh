@@ -4,10 +4,10 @@ export PATH
 #=================================================================#
 #   System Required:  CentOS 6,7, Debian, Ubuntu                  #
 #   Description: One click Install ShadowsocksR Server            #
-#   Author: 91yun <https://twitter.com/91yun>                     #
+#   Author: Nxin <https://mdzz8.com>                     #
 #   Thanks: @breakwa11 <https://twitter.com/breakwa11>            #
 #   Thanks: @Teddysun <i@teddysun.com>                            #
-#   Intro:  https://www.91yun.org/archives/2079                   #
+#   Intro:  https://mdzz8.com                   #
 #=================================================================#
 
 
@@ -80,7 +80,7 @@ function pre_install(){
     # Set ShadowsocksR config password
     echo "Please input password for ShadowsocksR:"
     read -p "(Default password: www.91yun.org):" shadowsockspwd
-    [ -z "$shadowsockspwd" ] && shadowsockspwd="www.91yun.org"
+    [ -z "$shadowsockspwd" ] && shadowsockspwd="1234"
     echo
     echo "---------------------------"
     echo "password = $shadowsockspwd"
@@ -91,7 +91,7 @@ function pre_install(){
     do
     echo -e "Please input port for ShadowsocksR [1-65535]:"
     read -p "(Default port: 8989):" shadowsocksport
-    [ -z "$shadowsocksport" ] && shadowsocksport="8989"
+    [ -z "$shadowsocksport" ] && shadowsocksport="52306"
     expr $shadowsocksport + 0 &>/dev/null
     if [ $? -eq 0 ]; then
         if [ $shadowsocksport -ge 1 ] && [ $shadowsocksport -le 65535 ]; then
@@ -205,19 +205,18 @@ function firewall_set(){
 function config_shadowsocks(){
     cat > /etc/shadowsocks.json<<-EOF
 {
-   "server":"0.0.0.0",
-    "server_ipv6": "[::]",
-    "local_address":"127.0.0.1",
-    "local_port":1080,
-    "port_password":{
-        "80":"password1",
-        "443":"password2"
-    },
-    "timeout":300,
+    "server": "0.0.0.0",
+    "server_ipv6": "::",
+    "server_port": ${shadowsocksport},
+    "local_address": "127.0.0.1",
+    "local_port": 1081,
+    "password": "${shadowsockspwd}",
+    "timeout": 120,
+    "udp_timeout": 60,
     "method": "chacha20",
-    "protocol": "auth_sha1_v2_compatible",
+    "protocol": "auth_sha1_compatible",
     "protocol_param": "",
-    "obfs": "tls1.2_ticket_auth_compatible",
+    "obfs": "tls1.0_session_auth_compatible",
     "obfs_param": "",
     "dns_ipv6": false,
     "connect_verbose_info": 1,
@@ -259,8 +258,8 @@ function install_ss(){
         echo -e "Server IP: \033[41;37m ${IP} \033[0m"
         echo -e "Server Port: \033[41;37m ${shadowsocksport} \033[0m"
         echo -e "Password: \033[41;37m ${shadowsockspwd} \033[0m"
-        echo -e "Protocol: \033[41;37m auth_sha1_v2 \033[0m"
-        echo -e "obfs: \033[41;37m tls1.2_ticket_auth \033[0m"
+        echo -e "Protocol: \033[41;37m auth_sha1 \033[0m"
+        echo -e "obfs: \033[41;37m tls1.0_session_auth \033[0m"
         echo -e "Encryption Method: \033[41;37m chacha20 \033[0m"
         echo "Welcome to visit:https://www.91yun.org/archives/2079"
         echo "If you want to change protocol & obfs, reference URL:"
